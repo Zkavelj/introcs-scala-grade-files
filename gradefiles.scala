@@ -1,3 +1,4 @@
+//Zvonk Kavelj
 import scala.util._
 import scala.io._	
 import scala.math._	
@@ -12,8 +13,8 @@ object gradefiles extends App {
     tokens
   }
 
-  def parseCSVRowOfDoubles(line : String, failValue : Double) : Array[Double] = {	 
-      
+  def parseCSVRowOfDoubles(line : String, failValue : Double) : Array[Double] = {	
+
     val tokens = line.split(",")
     val doubles = Array.fill(tokens.length)(failValue)
     for (i <- 0 until tokens.length) {
@@ -32,7 +33,7 @@ object gradefiles extends App {
     integers
   }
 
-  def readCategoryFile(courseName : String) : (Int, Array[String], Array[Int], Array[Int]) = {	
+  def readCategoryFile(courseName : String) : (Int, Array[String], Array[Int], Array[Int]) = {	//function to reaad the categories file
     val courseFileName = s"categories_$courseName.txt"
     val file = Source.fromFile(courseFileName)
     val lines = file.getLines
@@ -165,7 +166,7 @@ object gradefiles extends App {
 			}
 			else if(headerNames(croatia)=="Project"){
 				projectIndex=croatia
-			}
+           	}
 			else if(headerNames(croatia)=="Labs"){
 				labIndex=croatia
 			}
@@ -228,7 +229,7 @@ object gradefiles extends App {
 		grade=BigDecimal(grade).setScale(1, BigDecimal.RoundingMode.HALF_UP).toDouble
 		(grade)
 	}
-	def letterGradeCalculator(grade:Double):String={	//function to take the weighted grade as a parameter to return the letter grade
+	def letterGradeCalculator(grade:Double):String={	
 		var letterGrade=""
 		if(grade>=93){
 			letterGrade="A"
@@ -268,4 +269,204 @@ object gradefiles extends App {
 		}
 		(letterGrade)
 	}
-} 
+	def missingWorkFinder(homeworkNumbers:Array[String],examsNumbers:Array[String], projectNumbers:Array[String],labsNumbers:Array[String],classParticipationNumbers:Array[String],quantitiesArray:Array[Int], headerNames:Array[String]): String={
+		
+		var missing=" Missing:"
+		var homeworkIndex=0
+		var examIndex=0
+		var projectIndex=0
+		var labIndex=0
+		var participationIndex=0
+		var flag="DNE"
+		var flag2="false"
+		var numMissing=0
+		for(croatia<-0 to headerNames.length-1){
+			if(headerNames(croatia)=="Homework"){
+				homeworkIndex=croatia
+			}
+			else if(headerNames(croatia)=="Exams"){
+				examIndex=croatia
+			}
+			else if(headerNames(croatia)=="Project"){
+				projectIndex=croatia
+			}
+			else if(headerNames(croatia)=="Labs"){
+				labIndex=croatia
+			}
+			else if(headerNames(croatia)=="Class Participation"){
+				participationIndex=croatia
+			}
+		}
+					if(labsNumbers(0)!=null){
+					for(missing<-1 to quantitiesArray(labIndex).toInt){
+						for(available<-0 until labsNumbers.length){
+							if(labsNumbers(available)!=null){
+							if(missing==labsNumbers(available).toInt){
+								flag="exists"
+							}
+							}
+						}
+						if(flag!="exists"){
+							numMissing+=1
+							flag2="true"
+						}
+						flag="DNEL"
+					}
+					if(flag2=="true"){
+						missing+=(" "+numMissing.toString)
+						missing+=" L"
+						numMissing=0
+					}
+					}
+					flag2="false"
+					if(homeworkNumbers(0)!=null){
+					for(missing<-1 to quantitiesArray(homeworkIndex).toInt){
+						for(available<-0 until homeworkNumbers.length){
+							if(homeworkNumbers(available)!=null){
+							if(missing==homeworkNumbers(available).toInt){
+								flag="exists"
+							}
+							}
+						}
+						if(flag!="exists"){
+							numMissing+=1
+							flag2="true"
+						}
+						flag="DNEH"
+					}
+					if(flag2=="true"){
+						missing+=(" "+numMissing.toString)
+						missing+=" H"
+						numMissing=0
+					}
+					}
+					flag2="false"
+					if(projectNumbers(0)!=null){
+					for(missing<-1 to quantitiesArray(projectIndex).toInt){
+						for(available<-0 until projectNumbers.length){
+							if(projectNumbers(available)!=null){
+							if(missing==projectNumbers(available).toInt){
+								flag="exists"
+							}
+							}
+						}
+						if(flag!="exists"){
+							numMissing+=1
+							flag2="true"
+						}
+						flag="DNEP"
+					}
+					if(flag2=="true"){
+						missing+=(" "+numMissing.toString)
+						missing+=" P"
+						numMissing=0
+					}
+					}
+					flag2="false"
+					if(examsNumbers(0)!=null){
+					for(missing<-1 to quantitiesArray(examIndex).toInt){
+						for(available<-0 until examsNumbers.length){
+							if(examsNumbers(available)!=null){
+							if(missing==examsNumbers(available).toInt){
+								flag="exists"
+							}
+							}
+						}
+						if(flag!="exists"){
+							numMissing+=1
+							flag2="true"
+						}
+						flag="DNEE"
+					}
+					if(flag2=="true"){
+						missing+=(" "+numMissing.toString)
+						missing+=" H"
+						numMissing=0
+					}
+					}
+					flag2="false"
+					if(classParticipationNumbers(0)!=null){
+					for(missing<-1 to quantitiesArray(participationIndex).toInt){
+						for(available<-0 until classParticipationNumbers.length){
+							if(classParticipationNumbers(available)!=null){
+							if(missing==classParticipationNumbers(available).toInt){
+								flag="exists"
+							}
+							}
+						}
+						if(flag!="exists"){
+							numMissing+=1
+							flag2="true"
+						}
+						flag="DNECP"
+					}
+					if(flag2=="true"){
+						missing+=(" "+numMissing.toString)
+						missing+=" CP"
+						numMissing=0
+					}
+					}
+		(missing)
+	}
+	def classGradeReport(courseName:String,lastNameArray:Array[String],firstNameArray:Array[String], gradeArray:Array[String],letterGradeArray:Array[String],missingLabelArray:Array[String]){
+		
+		val file1 = new File(courseName+"_summary.txt")
+		val bw = new BufferedWriter(new FileWriter(file1))
+		for(student<-0 to lastNameArray.length-1){
+			if(lastNameArray(student)!=null){
+			bw.write(lastNameArray(student)+", "+firstNameArray(student)+" "+gradeArray(student)+" "+letterGradeArray(student))
+			if(missingLabelArray(student)!=" Missing:"){
+				bw.write(missingLabelArray(student))
+			}
+			bw.write("\n")
+		}
+		}
+		bw.close()
+	}
+ 
+  val courseName = Try(args(0)) getOrElse("comp150")
+  println(s">> Reading $courseName categories file")
+  val students=readCourseStudents(courseName)
+   students match {
+    case (i, l, f) => {
+      println("IDs")
+      i foreach println
+      println("Last Names")
+      l foreach println
+      println("First Names")
+      f foreach println
+   }
+   }
+	
+  val results = readCategoryFile(courseName)
+  results match {
+    case (n, h, w, q) => {
+      println(s"There are $n columns of data")
+      println("Headings")
+      h foreach println
+      println("Weights")
+      w foreach println
+      println("Quantities")
+      q foreach println
+   }
+ }
+	var gradeArray=new Array[String](21)
+	var letterGradeArray=new Array[String](21)
+	var missingLabelArray=new Array[String](21)
+	println(s">>Calculating individual grade for students in $courseName")
+	println(">>Checking for completion of all work")
+	for(estudiantes<-0 to (students._1).length-1){
+		if(students._1(estudiantes)!=null){
+		var individualInfo=readIndividualScores(students._1(estudiantes),courseName)
+		var individualGrade=gradeCalculator(individualInfo._1,individualInfo._2,individualInfo._3,individualInfo._4,individualInfo._5,results._3,results._4,results._2)
+		gradeArray(estudiantes)=individualGrade.toString
+		var gradeLetter=letterGradeCalculator(individualGrade)
+		letterGradeArray(estudiantes)=gradeLetter
+		var missingLabel=missingWorkFinder(individualInfo._6,individualInfo._7,individualInfo._8,individualInfo._9,individualInfo._10,results._4,results._2)
+		missingLabelArray(estudiantes)=missingLabel
+		}
+	}
+	println(s"<<Writing $courseName class data to file")
+	classGradeReport(courseName,students._2,students._3,gradeArray,letterGradeArray,missingLabelArray)
+	println(">>The end")
+}
