@@ -29,15 +29,15 @@ object Homework2_3 extends App {
       
    var linenumber = io.Source.fromFile("students_" + courseName + ".txt").getLines.size
     for (i <- 0 until linenumber) {
-        var kid = studentarray(i)
-        var singlearray = kid.split(",")
+        var student = studentarray(i)
+        var singlearray = student.split(",")
         var firstname = singlearray(2)
         var lastname = singlearray(1)
         var ID = singlearray(0)
         
-        val kidgrades = scala.io.Source.fromFile(ID + courseName + ".data")
-        val kidgradesarray:Array[String] = kidgrades.getLines.toArray
-        val gradenumber = (kidgradesarray.size)
+        val studentgrades = scala.io.Source.fromFile(ID + courseName + ".data")
+        val studentgradesarray:Array[String] = studentgrades.getLines.toArray
+        val gradenumber = (studentgradesarray.size)
         
    
         var homeworkx = 0
@@ -53,29 +53,29 @@ object Homework2_3 extends App {
         var labsarray = new Array[String](50)
         
         for (i <- 0 until gradenumber){
-            if (kidgradesarray(i).startsWith("H")){  
-                homeworkarray(homeworkx) = kidgradesarray(i)
+            if (studentgradesarray(i).startsWith("H")){  
+                homeworkarray(homeworkx) = studentgradesarray(i)
                 homeworkx = homeworkx +1
                 
           }
             
-            else if (kidgradesarray(i).startsWith("L")){
-                labsarray(labsx) = kidgradesarray(i)
+            else if (studentgradesarray(i).startsWith("L")){
+                labsarray(labsx) = studentgradesarray(i)
                 labsx = labsx + 1
                 
             }
-            else if (kidgradesarray(i).startsWith("C")){
-                classarray(classx) = kidgradesarray(i)
+            else if (studentgradesarray(i).startsWith("C")){
+                classarray(classx) = studentgradesarray(i)
                 classx = classx + 1
                
             }
-            else if (kidgradesarray(i).startsWith("E")){
-                examsarray(examsx) = kidgradesarray(i)
+            else if (studentgradesarray(i).startsWith("E")){
+                examsarray(examsx) = studentgradesarray(i)
                 examsx = examsx + 1
                 
             }
-            else if (kidgradesarray(i).startsWith("P")){
-                projectsarray(projectsx) = kidgradesarray(i)
+            else if (studentgradesarray(i).startsWith("P")){
+                projectsarray(projectsx) = studentgradesarray(i)
                 projectsx = projectsx + 1
                 
             }
